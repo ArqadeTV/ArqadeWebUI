@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arqade"
+version = "1.0.0"
+description = "Local AI model workbench: scan for models, chat with them, control prompt authority."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = ["fastapi", "uvicorn[standard]", "pydantic", "httpx", "psutil", "numpy"]
+
+[project.scripts]
+arqade = "arqade.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["arqade*"]
+
+[tool.setuptools.package-data]
+arqade = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

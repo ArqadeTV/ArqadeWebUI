@@ -1,0 +1,44 @@
+name: Deploy GitHub Pages
+
+# Publishes docs/ (landing page + install.sh + install.ps1). The curl one-liner is served from here:
+#   curl -fsSL https://<owner>.github.io/<repo>/install.sh | bash
+# One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", ".github/workflows/pages.yml", "arqade/static/theme.js"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build site (fill in repo placeholders)
+        run: |
+          mkdir _site
+          cp -r docs/. _site/
+          cp arqade/static/theme.js _site/theme.js
+          touch _site/.nojekyll
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          NAME="${GITHUB_REPOSITORY#*/}"
+          find _site -type f \( -name '*.html' -o -name '*.sh' -o -name '*.ps1' \) \
+            -exec sed -i "s#__REPO__#${GITHUB_REPOSITORY}#g; s#__OWNER__#${OWNER}#g; s#__REPO_NAME__#${NAME}#g" {} +
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

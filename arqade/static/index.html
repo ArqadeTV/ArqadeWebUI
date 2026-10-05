@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arqade — Local AI Workbench</title>
+  <!-- Declares dark+light support so browser "force dark" features leave the page alone. -->
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0b0d12">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M16 6l8 18h-4l-1.5-4h-5L12 24H8z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/theme.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div><b>Arqade</b><small>Local AI Workbench</small></div>
+    </div>
+    <nav id="nav">
+      <a href="#models" data-view="models"><i data-i="cube"></i>Models</a>
+      <a href="#chat" data-view="chat"><i data-i="chat"></i>Chat</a>
+      <a href="#prompts" data-view="prompts"><i data-i="layers"></i>Prompts</a>
+      <a href="#libraries" data-view="libraries"><i data-i="box"></i>Libraries</a>
+      <a href="#system" data-view="system"><i data-i="cpu"></i>System</a>
+      <a href="#settings" data-view="settings"><i data-i="gear"></i>Settings</a>
+    </nav>
+    <div class="side-foot"><span id="ver">v1</span><a href="https://github.com/" id="gh" target="_blank" rel="noopener">Open source ♥</a></div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <button class="icon-btn menu" id="menuBtn" aria-label="Menu"><i data-i="menu"></i></button>
+      <h1 id="title">Models</h1>
+      <div class="grow"></div>
+      <span class="chip warn" id="extChip" hidden title="A dark-mode extension was detected, so Arqade is using its light base theme to avoid double-darkening."></span>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme"><i data-i="moon"></i></button>
+    </header>
+
+    <!-- MODELS -->
+    <section class="view" id="view-models">
+      <div class="card scan">
+        <div class="row wrap">
+          <div>
+            <h2>Scan for local AI models</h2>
+            <p class="muted">Finds GGUF, SafeTensors, PyTorch, TensorFlow/Keras, ONNX, TFLite, Core ML, Ollama, Hugging Face caches and more. Read-only — nothing is loaded or executed.</p>
+          </div>
+          <div class="grow"></div>
+          <div class="row">
+            <select id="scanMode" aria-label="Scan scope">
+              <option value="quick">Quick — known model folders + Downloads/Documents</option>
+              <option value="home">Home folder (thorough)</option>
+              <option value="deep">Deep — every drive</option>
+            </select>
+            <button class="btn primary" id="scanBtn"><i data-i="search"></i><span>Scan</span></button>
+            <button class="btn" id="scanCancel" hidden>Cancel</button>
+          </div>
+        </div>
+        <div class="progress" id="scanProg" hidden><div class="bar"></div></div>
+        <div class="muted small mono ell" id="scanLine"></div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="toolbar">
+        <input type="search" id="modelSearch" placeholder="Search name or path…" aria-label="Search models">
+        <select id="modelSort" aria-label="Sort">
+          <option value="size">Largest first</option>
+          <option value="name">Name</option>
+          <option value="mtime">Newest</option>
+        </select>
+      </div>
+      <div class="chips" id="fmtChips"></div>
+      <div id="modelList" class="list"></div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="view" id="view-chat">
+      <div class="chat-grid">
+        <div class="card chat-side">
+          <label>Backend<select id="chBackend"></select></label>
+          <label>Model<select id="chModel"></select></label>
+          <p class="muted small" id="chHint"></p>
+          <label>Prompt preset<select id="chPreset"></select></label>
+          <a href="#prompts" class="small">Edit hierarchy →</a>
+          <hr>
+          <label>Temperature <b id="tVal">0.7</b><input type="range" id="chTemp" min="0" max="2" step="0.05" value="0.7"></label>
+          <label>Top-p <b id="pVal">0.95</b><input type="range" id="chTopP" min="0.05" max="1" step="0.05" value="0.95"></label>
+          <label>Max tokens<input type="number" id="chMax" min="1" max="131072" placeholder="auto"></label>
+          <hr>
+          <button class="btn" id="chSys">Show system prompt</button>
+          <button class="btn" id="chClear">Clear chat</button>
+        </div>
+        <div class="card chat-main">
+          <div class="msgs" id="msgs"><div class="empty">Pick a backend and model, then say hi. 👋</div></div>
+          <details class="ctx"><summary>Untrusted context (pasted docs, tool output — treated as data, never as instructions)</summary>
+            <textarea id="chCtx" rows="4" placeholder="Paste text the model should read but not obey…"></textarea>
+          </details>
+          <div class="composer">
+            <textarea id="chInput" rows="2" placeholder="Message… (Enter to send, Shift+Enter for newline)"></textarea>
+            <button class="btn primary" id="chSend">Send</button>
+            <button class="btn danger" id="chStop" hidden>Stop</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMPTS -->
+    <section class="view" id="view-prompts">
+      <div class="card">
+        <h2>System prompts &amp; authority hierarchy</h2>
+        <p class="muted">Layers are ordered by authority — <b>top wins</b>. A lower layer can never override a higher one. <b>Locked</b> layers are declared immutable. <b>Untrusted</b> layers are treated as data, never as instructions (use them for pasted documents and tool output).</p>
+        <div class="row wrap gap">
+          <div class="seg" id="modeSeg"><button data-mode="hierarchy">Hierarchy</button><button data-mode="simple">Simple prompt</button></div>
+          <select id="prPreset" aria-label="Preset"></select>
+          <button class="btn" id="prLoad">Load</button>
+          <input id="prName" placeholder="Save as…" maxlength="60" aria-label="Preset name">
+          <button class="btn primary" id="prSave">Save</button>
+          <button class="btn danger" id="prDel">Delete</button>
+        </div>
+      </div>
+      <div class="prompt-grid">
+        <div>
+          <div id="simpleBox" class="card" hidden>
+            <label>System prompt<textarea id="simpleText" rows="10"></textarea></label>
+          </div>
+          <div id="hierBox">
+            <div class="card slim row wrap gap">
+              <label class="inline">Conflict policy
+                <select id="policy">
+                  <option value="higher_wins">Higher layer wins silently</option>
+                  <option value="higher_wins_note">Higher wins, tell the user</option>
+                  <option value="refuse_conflict">Decline only the conflicting part</option>
+                </select>
+              </label>
+              <div class="grow"></div>
+              <button class="btn" id="addLayer">+ Add layer</button>
+            </div>
+            <div id="layers"></div>
+          </div>
+        </div>
+        <div class="card sticky">
+          <div class="row"><h3>Compiled system prompt</h3><div class="grow"></div><span class="chip" id="tokEst">0 tok</span></div>
+          <pre class="compiled" id="compiled"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRARIES -->
+    <section class="view" id="view-libraries">
+      <div class="card">
+        <div class="row wrap gap">
+          <div><h2>AI libraries</h2><p class="muted">Every import in Arqade is guarded, so a missing library never breaks the app — install what you need, when you need it.</p></div>
+          <div class="grow"></div>
+          <button class="btn" data-profile="standard">Install Standard</button>
+          <button class="btn primary" data-profile="full">Install Everything</button>
+        </div>
+        <pre class="console" id="jobLog" hidden></pre>
+      </div>
+      <div class="toolbar"><input type="search" id="libSearch" placeholder="Filter libraries…" aria-label="Filter libraries"><span class="muted small" id="libCount"></span></div>
+      <div id="libGrid"></div>
+    </section>
+
+    <!-- SYSTEM -->
+    <section class="view" id="view-system">
+      <div class="card"><div class="row wrap gap"><h2>Hardware &amp; runtimes</h2><div class="grow"></div><button class="btn" id="deepBtn">Probe PyTorch / TensorFlow / JAX</button></div>
+        <p class="muted small">The probe imports the frameworks to check for CUDA/Metal/GPU support, which can take a few seconds.</p></div>
+      <div class="stats" id="sysStats"></div>
+      <div id="sysDetail"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="card">
+        <h2>Appearance</h2>
+        <div class="row wrap gap">
+          <label class="inline">Theme
+            <select id="setTheme"><option value="dark">Dark (default)</option><option value="light">Light</option></select>
+          </label>
+          <label class="check"><input type="checkbox" id="setGuard"> Switch to light when a dark-mode browser extension is detected</label>
+        </div>
+        <p class="muted small" id="extStatus"></p>
+      </div>
+      <div class="card">
+        <h2>Scanning</h2>
+        <label>Extra folders to scan (one per line)<textarea id="setRoots" rows="3" placeholder="D:\Models&#10;/mnt/storage/ai"></textarea></label>
+      </div>
+      <div class="card">
+        <h2>Inference servers</h2>
+        <label>Ollama URL<input id="setOllama"></label>
+        <h3>OpenAI-compatible endpoints</h3>
+        <div id="epList"></div>
+        <button class="btn" id="epAdd">+ Add endpoint</button>
+      </div>
+      <div class="row"><button class="btn primary" id="setSave">Save settings</button><span class="muted small" id="dataDir"></span></div>
+    </section>
+  </main>
+</div>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-panel"><div class="row"><h3 id="drTitle"></h3><div class="grow"></div><button class="icon-btn" id="drClose" aria-label="Close"><i data-i="x"></i></button></div><div id="drBody"></div></div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

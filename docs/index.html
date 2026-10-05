@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arqade — Local AI Workbench</title>
+  <meta name="description" content="Scan your machine for local AI models, chat with them, and control prompt authority — one command to install.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cpath d='M16 6l8 18h-4l-1.5-4h-5L12 24H8z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="site.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="logo"></span><b>Arqade</b></div>
+  <div class="grow"></div>
+  <a href="https://github.com/__REPO__" class="gh">GitHub</a>
+  <button id="themeBtn" class="tbtn" aria-label="Toggle theme">◐</button>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="pill">Open source · MIT · runs 100% on your machine</p>
+    <h1>Find, inspect and chat with <span class="grad">every local AI model</span>.</h1>
+    <p class="lead">Arqade scans your drives for GGUF, SafeTensors, PyTorch, TensorFlow, ONNX and Ollama models, then lets you chat with them under a custom system prompt and a real <b>prompt authority hierarchy</b>.</p>
+
+    <div class="install">
+      <div class="tabs" role="tablist">
+        <button role="tab" class="on" data-t="unix">macOS / Linux</button>
+        <button role="tab" data-t="win">Windows</button>
+      </div>
+      <div class="cmd" id="cmd-unix"><code>curl -fsSL https://__OWNER__.github.io/__REPO_NAME__/install.sh | bash</code><button class="copy">Copy</button></div>
+      <div class="cmd" id="cmd-win" hidden><code>irm https://__OWNER__.github.io/__REPO_NAME__/install.ps1 | iex</code><button class="copy">Copy</button></div>
+      <p class="hint">Want everything? <code>… | bash -s -- --full</code> &nbsp;·&nbsp; UI only? <code>--lite</code> &nbsp;·&nbsp; Windows: set <code>$env:ARQADE_PROFILE='full'</code> first.</p>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article><h3>🔍 Model scanner</h3><p>Quick, home-folder or whole-drive scans. Understands Hugging Face caches, Ollama, LM Studio, sharded weights and TF SavedModels. Read-only — pickle files are listed, never loaded.</p></article>
+    <article><h3>🧠 PyTorch + TensorFlow + more</h3><p>Transformers, JAX, ONNX Runtime, llama.cpp, scikit-learn, XGBoost, LangChain, LlamaIndex and ~70 more, installed per-package so one failure never blocks the rest.</p></article>
+    <article><h3>🛡 Prompt authority hierarchy</h3><p>Stack Root → Developer → Operator → User layers. Lock layers, mark content as untrusted data, pick a conflict policy, and see the compiled prompt live.</p></article>
+    <article><h3>🌗 Dark first, extension-aware</h3><p>Dark by default, light on request. If Dark Reader, Night Eye &amp; friends are active, Arqade switches to its light base so they don't double-invert.</p></article>
+  </section>
+
+  <section class="manual">
+    <h2>Manual install</h2>
+    <pre><code>git clone https://github.com/__REPO__.git
+cd __REPO_NAME__
+./setup.sh          # Windows: setup.bat</code></pre>
+  </section>
+</main>
+<footer>MIT licensed · <a href="https://github.com/__REPO__">Source on GitHub</a></footer>
+
+<script>
+(function () {
+  var T = window.ArqadeTheme;
+  document.getElementById("themeBtn").onclick = function () { T.toggle(); };
+  document.querySelectorAll(".tabs button").forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll(".tabs button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      document.getElementById("cmd-unix").hidden = b.dataset.t !== "unix";
+      document.getElementById("cmd-win").hidden = b.dataset.t !== "win";
+    };
+  });
+  if (/Win/i.test(navigator.platform)) document.querySelector('[data-t="win"]').click();
+  document.querySelectorAll(".copy").forEach(function (b) {
+    b.onclick = function () {
+      var text = b.previousElementSibling.textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+        b.textContent = "Copied ✓"; setTimeout(function () { b.textContent = "Copy"; }, 1500);
+      }, function () { var r = document.createRange(); r.selectNodeContents(b.previousElementSibling); getSelection().removeAllRanges(); getSelection().addRange(r); });
+    };
+  });
+})();
+</script>
+</body>
+</html>
