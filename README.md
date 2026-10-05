@@ -8,15 +8,14 @@ Scan your machine for local AI models, inspect them, chat with them, and control
 
 macOS / Linux:
 ```bash
-curl -fsSL https://OWNER.github.io/REPO/install.sh | bash
+curl -fsSL https://arqadetv.github.io/ArqadeWebUI/install.sh | bash
 ```
 
 Windows (PowerShell):
 ```powershell
-irm https://OWNER.github.io/REPO/install.ps1 | iex
+irm https://arqadetv.github.io/ArqadeWebUI/install.ps1 | iex
 ```
 
-> Replace `OWNER/REPO` with your GitHub path. When you fork this repo and enable Pages (see below), the published copies of these scripts and the landing page fill in your real `OWNER/REPO` automatically.
 
 Options (macOS/Linux: `… | bash -s -- --full`; Windows: set `$env:ARQADE_PROFILE='full'` first):
 
@@ -28,7 +27,7 @@ Options (macOS/Linux: `… | bash -s -- --full`; Windows: set `$env:ARQADE_PROFI
 
 Manual install:
 ```bash
-git clone https://github.com/OWNER/REPO.git && cd REPO
+git clone https://github.com/ArqadeTV/ArqadeWebUI.git && cd ArqadeWebUI
 ./setup.sh          # Windows: setup.bat
 ./run.sh            # later launches (Windows: run.bat)
 ```
